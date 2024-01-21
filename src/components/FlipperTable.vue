@@ -51,7 +51,7 @@ onMounted(async () => {
                 <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
             </template>
             <template v-slot:item.actions="{ item }">
-                <v-icon small @click="console.log(`I was clicked for ${item}`)">mdi-pencil</v-icon>
+                <v-icon small @click="console.log(`I was clicked for ${item.name}`)">mdi-pencil</v-icon>
             </template>
         </v-data-table>
     </v-card>

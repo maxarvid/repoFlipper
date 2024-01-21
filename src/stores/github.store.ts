@@ -24,11 +24,6 @@ export const useGithubStore = defineStore('github', () => {
     }
   }
 
-  async function checkToken() {
-    const octokit = new Octokit({ auth: token.value });
-    const { data } = await octokit.rest.users.getAuthenticated();
-    console.log(data);
-  }
   async function getRepos() {
     const octokit = new Octokit({ auth: token.value });
     const per_page = 100;
@@ -36,34 +31,38 @@ export const useGithubStore = defineStore('github', () => {
     let hasNextPage = true;
 
     while (hasNextPage) {
-      const { data } = await octokit.rest.repos.listForUser({
-        username: username.value,
-        per_page,
-        page,
-      });
+      try {
+        const { data } = await octokit.rest.repos.listForUser({
+          username: username.value,
+          per_page,
+          page,
+        });
 
-      if (data.length < per_page) {
-        hasNextPage = false;
+        if (data.length < per_page) {
+          hasNextPage = false;
+        }
+        repos.value = [...repos.value, ...data];
+        page++;
+      } catch (error) {
+        throw new Error("Couldn't get repos");
       }
-      repos.value = [...repos.value, ...data];
-      page++;
     }
     return repos.value;
   }
 
-  async function flipReposToPrivate() {
+  async function flipReposToPrivate(repos: string[]) {
     const octokit = new Octokit({ auth: token.value });
 
-    for (let repo of repos.value) {
+    for (let repo of repos) {
       try {
         const { data } = await octokit.rest.repos.update({
           owner: username.value,
-          repo: repo.name,
+          repo,
           private: true,
         });
         console.log(data);
       } catch (error) {
-        console.error(error);
+        throw new Error("Couldn't update repo");
       }
     }
   }
@@ -75,7 +74,6 @@ export const useGithubStore = defineStore('github', () => {
     publicRepoCount,
     authenticated,
     authenticate,
-    checkToken,
     getRepos,
     flipReposToPrivate,
   };
