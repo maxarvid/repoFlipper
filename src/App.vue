@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { useAuthStore } from './stores/auth.store.ts';
+import { useGithubStore } from './stores/github.store.ts';
 import { storeToRefs } from 'pinia'
 import FlipperForm from './components/FlipperForm.vue';
-import CheckTokenButton from './components/CheckTokenButton.vue';
+import FlipperButton from './components/FlipperButton.vue';
+import DisplayPublicRepoCount from './components/DisplayPublicRepoCount.vue';
 
-const hello = import.meta.env.VITE_TEST
-const store = useAuthStore();
+const store = useGithubStore();
 const { authenticated } = storeToRefs(store);
-console.log(hello)
 </script>
 
 <template>
@@ -16,7 +15,10 @@ console.log(hello)
     <div v-if="!authenticated">
       <FlipperForm />
     </div>
-    <CheckTokenButton />
+    <div v-else>
+      <DisplayPublicRepoCount />
+      <FlipperButton />
+    </div>
   </div>
 </template>
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useAuthStore } from '../stores/auth.store.ts';
+import { useGithubStore } from '../stores/github.store.ts';
 import { storeToRefs } from 'pinia'
 
-const store = useAuthStore();
+const store = useGithubStore();
 const { token, username } = storeToRefs(store);
 const { authenticate } = store;
 
@@ -22,4 +22,4 @@ const handleSubmit = async () => {
 </template>
 
 
-<style scoped></style>
+<style scoped></style>../stores/github.store.ts
