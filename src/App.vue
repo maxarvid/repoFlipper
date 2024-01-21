@@ -10,16 +10,18 @@ const { authenticated } = storeToRefs(store);
 </script>
 
 <template>
-  <div>
-    <p>Github Repo Visibility Flipper</p>
-    <div v-if="!authenticated">
-      <FlipperForm />
-    </div>
-    <div v-else>
-      <DisplayPublicRepoCount />
-      <FlipperButton />
-    </div>
-  </div>
+  <v-layout class="rounded rounded-md">
+    <v-app-bar title="Github Repo Visibility Flipper"></v-app-bar>
+    <v-main>
+      <div v-if="!authenticated">
+        <FlipperForm />
+      </div>
+      <div v-else>
+        <DisplayPublicRepoCount />
+        <FlipperButton />
+      </div>
+    </v-main>
+  </v-layout>
 </template>
 
 <style scoped></style>

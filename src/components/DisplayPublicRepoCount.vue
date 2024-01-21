@@ -8,7 +8,9 @@ const { publicRepoCount } = storeToRefs(store);
 
 
 <template>
-    <p>There are {{ publicRepoCount }} public repos associated with this token</p>
+    <v-sheet :height="800" :width="400">
+        <p>There are {{ publicRepoCount }} public repos associated with this token</p>
+    </v-sheet>
 </template>
 
 

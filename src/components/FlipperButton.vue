@@ -10,7 +10,10 @@ onMounted(() => {
 
 </script>
 <template>
-    <button type="button" @click="flipReposToPrivate">Change Repos to Private?</button>
+    <v-sheet>
+        <v-btn @click="flipReposToPrivate">Change Repos to
+            Private?</v-btn>
+    </v-sheet>
 </template>
 
 
