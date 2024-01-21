@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import { useAuthStore } from '../stores/auth.store.ts';
 import { storeToRefs } from 'pinia'
-// TODO: check out octokit/core probably enough
-import { Octokit } from 'octokit';
 
 const store = useAuthStore();
 const { token, username } = storeToRefs(store);
+const { authenticate } = store;
 
 const handleSubmit = async () => {
-    const octokit = new Octokit({ auth: token.value });
-    const { data } = await octokit.rest.repos.listForUser({ username: username.value, per_page: 50 })
-    console.log(data);
+    await authenticate();
 }
 </script>
 

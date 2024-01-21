@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-
-const flippingTime = ref(false)
-
-import FlipperButton from './components/FlipperButton.vue';
+import { useAuthStore } from './stores/auth.store.ts';
+import { storeToRefs } from 'pinia'
 import FlipperForm from './components/FlipperForm.vue';
+import CheckTokenButton from './components/CheckTokenButton.vue';
 
 const hello = import.meta.env.VITE_TEST
-
+const store = useAuthStore();
+const { authenticated } = storeToRefs(store);
 console.log(hello)
 </script>
 
 <template>
   <div>
     <p>Github Repo Visibility Flipper</p>
-    <FlipperButton v-if="!flippingTime" @set-flipping-time="flippingTime = !flippingTime" />
-    <FlipperForm v-else />
+    <div v-if="!authenticated">
+      <FlipperForm />
+    </div>
+    <CheckTokenButton />
   </div>
 </template>
 
