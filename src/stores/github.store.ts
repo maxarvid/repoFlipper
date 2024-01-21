@@ -15,9 +15,13 @@ export const useGithubStore = defineStore('github', () => {
 
   async function authenticate() {
     const octokit = new Octokit({ auth: token.value });
-    const { data } = await octokit.rest.users.getAuthenticated();
-    publicRepoCount.value = data.public_repos;
-    authenticated.value = true;
+    try {
+      const { data } = await octokit.rest.users.getAuthenticated();
+      publicRepoCount.value = data.public_repos;
+      authenticated.value = true;
+    } catch (error) {
+      throw new Error('Invalid token');
+    }
   }
 
   async function checkToken() {
@@ -44,6 +48,7 @@ export const useGithubStore = defineStore('github', () => {
       repos.value = [...repos.value, ...data];
       page++;
     }
+    return repos.value;
   }
 
   async function flipReposToPrivate() {

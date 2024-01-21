@@ -8,10 +8,9 @@ const { publicRepoCount } = storeToRefs(store);
 
 
 <template>
-    <v-sheet :height="800" :width="400">
-        <p>There are {{ publicRepoCount }} public repos associated with this token</p>
-    </v-sheet>
+    <v-card class="mx-auto" variant="tonal" width="400px">
+        <v-card-text>
+            There are {{ publicRepoCount }} public repos associated with this token and user
+        </v-card-text>
+    </v-card>
 </template>
-
-
-<style scoped></style>../stores/github.store.ts

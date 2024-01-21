@@ -22,7 +22,13 @@ const tokenRules = ref([
 ])
 
 const handleSubmit = async () => {
-    await authenticate();
+    if (!username.value || !token.value) return
+    try {
+        await authenticate();
+    } catch (error) {
+        // TODO inform user of error, focus token input
+        console.error(error);
+    }
 }
 </script>
 
@@ -33,11 +39,7 @@ const handleSubmit = async () => {
                 :rules="usernameRules" />
             <v-text-field label="Token" type="password" id="token" name="token" v-model="token"
                 :rules="tokenRules" />
-            <v-btn :disabled="!username.length || !token.length" block class="mt-2"
-                type="submit">Submit</v-btn>
+            <v-btn block class="mt-2" type="submit">Submit</v-btn>
         </v-form>
     </v-sheet>
 </template>
-
-
-<style scoped></style>../stores/github.store.ts
