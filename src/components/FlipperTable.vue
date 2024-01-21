@@ -19,13 +19,13 @@ const headers = ref([
     { value: 'actions', sortable: false },
 ])
 const loading = ref(true)
+const dialog = ref(false)
 const items: Ref<Item[]> = ref([]);
-const selected = ref([])
+const selected: Ref<string[]> = ref([])
 const search = ref('')
 const store = useGithubStore();
-const { getRepos } = store;
+const { getRepos, flipReposToPrivate } = store;
 const { repos } = storeToRefs(store);
-console.log(repos.value);
 
 onMounted(async () => {
     await getRepos();
@@ -39,6 +39,27 @@ onMounted(async () => {
     })
     loading.value = false;
 })
+
+const handleUpdate = (item: Item) => {
+    const isSelected = selected.value.some((selectedItem: string) => selectedItem === item.name);
+    if (!isSelected) {
+        selected.value.push(item.name);
+    }
+    dialog.value = true;
+}
+
+const handleUpdateAccept = async () => {
+    loading.value = true;
+    try {
+        await flipReposToPrivate(selected.value);
+        selected.value = [];
+    } catch (error) {
+        console.error(error);
+    } finally {
+        loading.value = false;
+    }
+    dialog.value = false;
+}
 </script>
 
 <template>
@@ -51,8 +72,22 @@ onMounted(async () => {
                 <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
             </template>
             <template v-slot:item.actions="{ item }">
-                <v-icon small @click="console.log(`I was clicked for ${item.name}`)">mdi-pencil</v-icon>
+                <v-icon small @click="handleUpdate(item)">mdi-pencil</v-icon>
             </template>
         </v-data-table>
+        <v-dialog v-model="dialog" width="auto">
+            <v-card>
+                <v-card-text>
+                    These are the repos you selected to make private:
+                    <v-list :items="selected"></v-list>
+                    This action is irreversible. Are you sure you want to continue?
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="primary" @click="dialog = false">Cancel</v-btn>
+                    <v-btn color="primary" @click="handleUpdateAccept">Continue</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-card>
 </template>
