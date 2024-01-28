@@ -11,7 +11,7 @@ const { authenticated } = storeToRefs(store);
 
 <template>
   <v-layout class="rounded rounded-md">
-    <v-app-bar title="Github Repo Visibility Flipper"></v-app-bar>
+    <v-app-bar title="Github Repo Flipper"></v-app-bar>
     <v-main>
       <div v-if="!authenticated">
         <FlipperForm />

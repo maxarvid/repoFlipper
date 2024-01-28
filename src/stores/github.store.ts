@@ -4,7 +4,7 @@ import { Octokit } from 'octokit';
 import { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods';
 
 type ReposListForUserResponseData =
-  RestEndpointMethodTypes['repos']['listForUser']['response']['data'];
+  RestEndpointMethodTypes['repos']['listForAuthenticatedUser']['response']['data'];
 
 export const useGithubStore = defineStore('github', () => {
   const username = ref('');
@@ -32,10 +32,10 @@ export const useGithubStore = defineStore('github', () => {
 
     while (hasNextPage) {
       try {
-        const { data } = await octokit.rest.repos.listForUser({
-          username: username.value,
+        const { data } = await octokit.rest.repos.listForAuthenticatedUser({
           per_page,
           page,
+          affiliation: 'owner',
         });
 
         if (data.length < per_page) {
