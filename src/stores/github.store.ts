@@ -25,7 +25,10 @@ export const useGithubStore = defineStore('github', () => {
   }
 
   async function getRepos() {
-    const octokit = new Octokit({ auth: token.value });
+    repos.value = [];
+    const octokit = new Octokit({
+      auth: token.value,
+    });
     const per_page = 100;
     let page = 1;
     let hasNextPage = true;
@@ -36,6 +39,9 @@ export const useGithubStore = defineStore('github', () => {
           per_page,
           page,
           affiliation: 'owner',
+          headers: {
+            'If-None-Match': '',
+          },
         });
 
         if (data.length < per_page) {
@@ -60,7 +66,27 @@ export const useGithubStore = defineStore('github', () => {
           repo,
           private: true,
         });
-        console.log(data);
+      } catch (error) {
+        throw new Error("Couldn't update repo");
+      }
+    }
+  }
+
+  interface RepoSettings {
+    private?: boolean;
+    archived?: boolean;
+  }
+
+  async function bulkEditRepos(repos: string[], settings: RepoSettings) {
+    const octokit = new Octokit({ auth: token.value });
+
+    for (let repo of repos) {
+      try {
+        await octokit.rest.repos.update({
+          owner: username.value,
+          repo,
+          ...settings,
+        });
       } catch (error) {
         throw new Error("Couldn't update repo");
       }
@@ -76,5 +102,6 @@ export const useGithubStore = defineStore('github', () => {
     authenticate,
     getRepos,
     flipReposToPrivate,
+    bulkEditRepos,
   };
 });

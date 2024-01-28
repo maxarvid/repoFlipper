@@ -3,7 +3,6 @@ import { useGithubStore } from './stores/github.store.ts';
 import { storeToRefs } from 'pinia'
 import FlipperForm from './components/FlipperForm.vue';
 import FlipperTable from './components/FlipperTable.vue';
-import DisplayPublicRepoCount from './components/DisplayPublicRepoCount.vue';
 
 const store = useGithubStore();
 const { authenticated } = storeToRefs(store);
@@ -17,7 +16,6 @@ const { authenticated } = storeToRefs(store);
         <FlipperForm />
       </div>
       <div v-else>
-        <DisplayPublicRepoCount />
         <FlipperTable />
       </div>
     </v-main>

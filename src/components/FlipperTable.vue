@@ -7,14 +7,14 @@ type Item = {
     name: string,
     visibility?: string,
     url: string,
-    fork?: boolean,
-
+    fork: boolean,
+    archived: boolean,
 }
-
 const headers = ref([
     { title: 'Name', value: 'name' },
-    { title: 'Visibility', value: 'visibility' },
     { title: 'URL', value: 'url' },
+    { title: 'Visibility', value: 'visibility' },
+    { title: 'Archived', value: 'archived' },
     { title: 'Fork', value: 'fork' },
     { value: 'actions', sortable: false },
 ])
@@ -22,21 +22,17 @@ const loading = ref(true)
 const dialog = ref(false)
 const items: Ref<Item[]> = ref([]);
 const selected: Ref<string[]> = ref([])
+const bulkSettings = ref({
+    visibility: undefined,
+    archived: undefined,
+})
 const search = ref('')
 const store = useGithubStore();
-const { getRepos, flipReposToPrivate } = store;
+const { getRepos, bulkEditRepos } = store;
 const { repos } = storeToRefs(store);
 
 onMounted(async () => {
-    await getRepos();
-    items.value = repos.value.map((repo) => {
-        return {
-            name: repo.name,
-            visibility: repo.visibility,
-            url: repo.html_url,
-            fork: repo.fork
-        }
-    })
+    await fetchRepos();
     loading.value = false;
 })
 
@@ -50,15 +46,31 @@ const handleUpdate = (item: Item) => {
 
 const handleUpdateAccept = async () => {
     loading.value = true;
+    dialog.value = false;
     try {
-        await flipReposToPrivate(selected.value);
+        await bulkEditRepos(selected.value, bulkSettings.value);
+        // TODO - refactor to update items directly and fetch table in background
+        await fetchRepos();
         selected.value = [];
     } catch (error) {
         console.error(error);
     } finally {
         loading.value = false;
     }
-    dialog.value = false;
+}
+
+const fetchRepos = async () => {
+    await getRepos();
+    items.value = repos.value.map((repo) => {
+        return {
+            name: repo.name,
+            visibility: repo.visibility,
+            archived: repo.archived,
+            url: repo.html_url,
+            fork: repo.fork
+        }
+    })
+    // tableKey.value++
 }
 </script>
 
@@ -72,15 +84,19 @@ const handleUpdateAccept = async () => {
                 <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
             </template>
             <template v-slot:item.actions="{ item }">
-                <v-icon small @click="handleUpdate(item)">mdi-pencil</v-icon>
+                <v-icon small @click="handleUpdate(item)" icon="mdi-pencil" />
             </template>
         </v-data-table>
         <v-dialog v-model="dialog" width="auto">
             <v-card>
                 <v-card-text>
-                    These are the repos you selected to make private:
+                    These are the repos you selected to edit:
                     <v-list :items="selected"></v-list>
-                    This action is irreversible. Are you sure you want to continue?
+                    Below are the settings available:
+                    <v-combobox clearable label="Visibility" :items="['private', 'public']"
+                        v-model="bulkSettings.visibility" />
+                    <v-combobox clearable label="Archived" :items="[true, false]"
+                        v-model="bulkSettings.archived" />
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
