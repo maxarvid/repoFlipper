@@ -56,22 +56,6 @@ export const useGithubStore = defineStore('github', () => {
     return repos.value;
   }
 
-  async function flipReposToPrivate(repos: string[]) {
-    const octokit = new Octokit({ auth: token.value });
-
-    for (let repo of repos) {
-      try {
-        const { data } = await octokit.rest.repos.update({
-          owner: username.value,
-          repo,
-          private: true,
-        });
-      } catch (error) {
-        throw new Error("Couldn't update repo");
-      }
-    }
-  }
-
   interface RepoSettings {
     private?: boolean;
     archived?: boolean;
@@ -101,7 +85,6 @@ export const useGithubStore = defineStore('github', () => {
     authenticated,
     authenticate,
     getRepos,
-    flipReposToPrivate,
     bulkEditRepos,
   };
 });
